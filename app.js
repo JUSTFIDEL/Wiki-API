@@ -25,7 +25,12 @@ const articleSchema = {
 
 const Article = mongoose.model('Article', articleSchema);
 
-app.route('articles').get((req, res) => {
+
+//////////////////// Request to target All the Articles  /////////////////////////
+
+app.route('/articles')
+
+.get((req, res) => {
 
   Article.find((err, foundArticles) => {
     if (!err) {
@@ -62,6 +67,62 @@ app.route('articles').get((req, res) => {
     }
   })
 });
+
+
+
+////////////////// Request to target a Specific Article /////////////////////////
+
+app.route('/articles/:articleTitle')
+.get((req, res) => {
+ Article.findOne({title: req.params.articleTitle}, (err, foundArticle) => {
+    if(foundArticle) {
+      res.send(foundArticle);
+    } else {
+      res.send(err);
+    }
+   } 
+ )
+})
+
+.put((req, res) => {
+  Article.replaceOne(
+    {title: req.params.articleTitle},
+    req.body,
+    (err) => {
+      if (!err) {
+        res.send('Successfully Updated article');
+      }
+    }
+  )
+})
+
+.patch((req, res) => {
+  Article.findOneAndUpdate(
+    {title: req.params.articleTitle},
+    {$set: req.body},
+    (err) => {
+      if (!err) {
+        res.send('Successfully Updated article');
+      } else {
+        res.send(err)
+      }
+    }
+  )
+})
+
+.delete((req, res) => {
+  Article.deleteOne(
+    {title: req.params.articleTitle},
+    (err) => {
+      if (!err) {
+        res.send('Successfully Deleted article');
+      } else {
+        res.send(err)
+      }
+    }
+  )
+});
+
 
 
 
